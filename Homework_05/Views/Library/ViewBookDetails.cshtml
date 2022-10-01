@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Book Details";
+}
+@model Homework_05.ViewModels.BooksBorrowedVM
+
+<h2>
+    @Model.Books.BookName -
+    @if (Model.Books.Status == "Out")
+    {
+        <span style="color:red">@Model.Books.Status</span>
+    }
+    else if (Model.Books.Status == "Avaliable")
+    {
+        <span style="color:green">Model.Book.Status</span>
+    }
+</h2>
+<hr />
+<div>
+    <h3>#Borrows - @Model.Borrows.Count()</h3>
+    <a href="@Url.Action("ViewStudents", "Library", new {bookid = Model.Books.BookID})" class="btn btn-info">View Students</a>
+
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Taken Date</th>
+            <th scope="col">Brought Date</th>
+            <th scope="col"> Borrowed by </th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model.Borrows)
+        {
+            <tr>
+                <th scope="row">@book.BorrowID</th>
+                <td>@book.BorrowDate</td>
+                <td>@book.ReturnDate</td>
+                <td>@book.Borrower.StudentName</td>
+            </tr>
+        }
+
+    </tbody>
+</table>
