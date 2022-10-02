@@ -351,6 +351,46 @@ namespace Homework_05.Data
             }
             return authors;
         }
+        public void ReturnBook(int bookId, int studentId) 
+        { 
+            using (SqlConnection con = new SqlConnection(connectionString)) 
+            { 
+                con.Open(); 
+                string query = "UPDATE borrows set broughtDate = @broughtDate WHERE borrows.studentId = @studentId AND borrows.bookId = @bookId AND broughtDate IS NULL";
+                using (SqlCommand cmd = new SqlCommand(query, con)) 
+                { 
+                    cmd.Parameters.Add(new SqlParameter("@studentId", studentId)); 
+                    cmd.Parameters.Add(new SqlParameter("@bookId", bookId)); 
+                    cmd.Parameters.Add(new SqlParameter("@broughtDate", DateTime.Now)); 
+                    cmd.ExecuteNonQuery(); 
+                } 
+                con.Close(); 
+            }
+        
+            //GetAllStudents().Where(s => s.Id == studentId).FirstOrDefault().Book = false; 
+            //Implement Status changes
+        }
+        public void BorrowBook(int bookId, int studentId)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                string query = "insert into borrows( studentId, bookId, takenDate) " +
+                    "values(@studentId,@bookId,@takenDate) ";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
 
+                    cmd.Parameters.Add(new SqlParameter("@studentId", studentId));
+                    cmd.Parameters.Add(new SqlParameter("@bookId", bookId));
+                    cmd.Parameters.Add(new SqlParameter("@takenDate", DateTime.Now));
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
+            }
+
+            //GetAllStudents().Where(s => s.Id == studentId).FirstOrDefault().Book = true;
+            //Implement Status changes
+
+        }
     }
 }

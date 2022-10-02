@@ -10,5 +10,6 @@ namespace Homework_05.ViewModels
     {
         public Book Books { get; set; }
         public List<Student> Students { get; set; }
+        public List<Class> Class { get; set; }
     }
 }

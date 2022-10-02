@@ -21,13 +21,25 @@ namespace Homework_05.Controllers
             BVM.Books = DataService.GetBooks();
             return View(BVM);
         }
-        public IActionResult ReturnBook()
+        public IActionResult ReturnBook(int bookId, int studentId)
         {
-            return View();
+            DataService.ReturnBook(bookId, studentId);
+            DataService.GetBookBorrowsById(bookId);
+            BooksBorrowedVM BBVM = new BooksBorrowedVM();
+            BBVM.Books = DataService.GetBorrowedBookById(bookId);
+            BBVM.Borrows = DataService.GetBookBorrowsById(bookId);
+
+            //foreach ()
+            //{
+
+            //}
+            return View("ViewBookDetails", BBVM);
         }
-        public IActionResult BorrowBook()
+        public IActionResult BorrowBook(int bookId, int studentId)
         {
-            return View();
+            DataService.BorrowBook(bookId, studentId);
+            BooksBorrowedVM BBVM = new BooksBorrowedVM();
+            return View("ViewBookDetails", BBVM);
         }
         public ActionResult ViewBookDetails(int bookId)
         {
@@ -60,18 +72,18 @@ namespace Homework_05.Controllers
         {
 
             StudentStatus(bookid);
-            ////List<Class> classes = new List<Class>();
-            ////foreach (Student student in DataService.GetStudents())
-            ////{
-            ////    Class cl = new Class
-            ////    {
-            ////        Name = student.Class
-            ////    };
-            ////    if (classes.Where(n => n.Name == student.Class).Count() == 0)
-            ////    {
-            ////        classes.Add(cl);
-            ////    }
-            ////}
+            List<Class> classes = new List<Class>();
+            foreach (Student student in DataService.GetStudents())
+            {
+                Class cl = new Class
+                {
+                    Name = student.StudentClass
+                };
+                if (classes.Where(n => n.Name == student.StudentClass).Count() == 0)
+                {
+                    classes.Add(cl);
+                }
+            }
 
 
             StudentsVM SVM = new StudentsVM
@@ -87,12 +99,12 @@ namespace Homework_05.Controllers
             BooksVM BVM = new BooksVM();
             BVM.BookTypes = DataService.GetBookTypes();
             BVM.Authors = DataService.GetAuthors();
-            // Search Name, Type and Author
+            // Search Name, Type and Author specific search using contains
             if (bookName != null && authorId != 0 && bookTypeId != 0)
             {
                 BVM.Books = DataService.GetBooks().Where(book => book.BookName.Contains(bookName.Trim()) && book.BookType.TypeID == bookTypeId && book.Author.AuthorID == authorId).ToList();
             }
-            // Search for a Name
+            // Search for a Name using contains
             if (bookName != null)
             {
                 BVM.Books = DataService.GetBooks().Where(book => book.BookName.Contains(bookName.Trim())).ToList();
@@ -114,33 +126,33 @@ namespace Homework_05.Controllers
         public ActionResult SearchStudent(int bookid, string studentName = null, string _class = null)
         {
             StudentStatus(bookid);
-            //List<Class> classes = new List<Class>();
-            //foreach (Student student in DataService.GetStudents())
-            //{
-            //    Class cl = new Class
-            //    {
-            //        Name = student.Class
-            //    };
-            //    if (classes.Where(n => n.Name == student.Class).Count() == 0)
-            //    {
-            //        classes.Add(cl);
-            //    }
-            //}
+            List<Class> classes = new List<Class>();
+            foreach (Student student in DataService.GetStudents())
+            {
+                Class cl = new Class
+                {
+                    Name = student.StudentClass
+                };
+                if (classes.Where(n => n.Name == student.StudentClass).Count() == 0)
+                {
+                    classes.Add(cl);
+                }
+            }
             StudentsVM studentVM = new StudentsVM();
-            //studentVM.Class = classes;
+            studentVM.Class = classes;
             studentVM.Books = DataService.GetBorrowedBookById(bookid);
-            //if (_class != "Select a Class" || _class != null)
-            //{
-            //    studentVM.Students = DataService.GetStudents().Where(cl => cl.Class == _class).ToList();
-            //}
+            if (_class != "Select a Class" || _class != null)
+            {
+                studentVM.Students = DataService.GetStudents().Where(cl => cl.StudentClass == _class).ToList();
+            }
             if (studentName != "")
             {
                 studentVM.Students = DataService.GetStudents().Where(cl => cl.StudentName.Contains(studentName)).ToList();
             }
-            //if (studentName != "" && ((_class != "Select a Class" || _class != null)) )
-            //{
-            //    studentVM.Students = DataService.GetStudents().Where(cl => cl.Name.Contains(studentName.Trim()) && cl.Class == _class).ToList();
-            //}
+            if (studentName != "" && ((_class != "Select a Class" || _class != null)))
+            {
+                studentVM.Students = DataService.GetStudents().Where(cl => cl.StudentName.Contains(studentName.Trim()) && cl.StudentClass == _class).ToList();
+            }
 
             return View("ViewStudents", studentVM);
 
