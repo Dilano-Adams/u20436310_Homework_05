@@ -58,6 +58,7 @@ namespace Homework_05.Data
             List<Book> Books = new List<Book>();
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM books", con))
                 {
@@ -77,6 +78,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
             foreach (var Book in Books)
@@ -101,6 +103,7 @@ namespace Homework_05.Data
             List<Borrow> Borrows = new List<Borrow>();
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM borrows", con))
                 {
@@ -121,6 +124,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
             return Borrows;
@@ -130,6 +134,7 @@ namespace Homework_05.Data
             List<Borrow> BookBorrows = new List<Borrow>();
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM borrows WHERE borrows.bookId = " + id, con))
                 {
@@ -149,6 +154,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
             return BookBorrows;
@@ -158,6 +164,7 @@ namespace Homework_05.Data
             Student student = null;
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM students WHERE studentId = " + id, con))
                 {
@@ -176,6 +183,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
             return student;
@@ -185,6 +193,7 @@ namespace Homework_05.Data
             List<Student> students = new List<Student>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
+                //openConnection();
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM students ", conn))
                 {
@@ -204,6 +213,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 conn.Close();
             }
             return students;
@@ -213,6 +223,7 @@ namespace Homework_05.Data
             Book Book = null;
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM books WHERE bookId = " + id, con))
                 {
@@ -230,6 +241,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
 
@@ -253,6 +265,7 @@ namespace Homework_05.Data
             BookType bookType = null;
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM types WHERE typeId = " + id, con))
                 {
@@ -268,6 +281,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
             return bookType;
@@ -277,6 +291,7 @@ namespace Homework_05.Data
             List<BookType> bookTypes = new List<BookType>();
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM types", con))
                 {
@@ -293,6 +308,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
             return bookTypes;
@@ -304,6 +320,7 @@ namespace Homework_05.Data
             Author author = null;
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM authors WHERE authorId = " + id, con))
                 {
@@ -320,6 +337,7 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
             return author;
@@ -330,6 +348,7 @@ namespace Homework_05.Data
             List<Author> authors = new List<Author>();
             using (SqlConnection con = new SqlConnection(connectionString))
             {
+                //openConnection();
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("SELECT * FROM authors ", con))
                 {
@@ -347,10 +366,34 @@ namespace Homework_05.Data
                         }
                     }
                 }
+                //closeConnection();
                 con.Close();
             }
             return authors;
         }
+
+        public void BorrowBook(int bookId, int studentId)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                string query = "INSERT INTO borrows (studentId, bookId, takenDate) " + "VALUES(@studentId,@bookId,@takenDate) ";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+
+                    cmd.Parameters.Add(new SqlParameter("@studentId", studentId));
+                    cmd.Parameters.Add(new SqlParameter("@bookId", bookId));
+                    cmd.Parameters.Add(new SqlParameter("@takenDate", DateTime.Now));
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
+            }
+
+            GetStudents().Where(s => s.StudentID == studentId).FirstOrDefault().HasBook = true;
+            //Implement Status changes
+
+        }
+
         public void ReturnBook(int bookId, int studentId) 
         { 
             using (SqlConnection con = new SqlConnection(connectionString)) 
@@ -366,29 +409,8 @@ namespace Homework_05.Data
                 } 
                 con.Close(); 
             }
-        
-            //GetAllStudents().Where(s => s.Id == studentId).FirstOrDefault().Book = false; 
-            //Implement Status changes
-        }
-        public void BorrowBook(int bookId, int studentId)
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                con.Open();
-                string query = "insert into borrows( studentId, bookId, takenDate) " +
-                    "values(@studentId,@bookId,@takenDate) ";
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
 
-                    cmd.Parameters.Add(new SqlParameter("@studentId", studentId));
-                    cmd.Parameters.Add(new SqlParameter("@bookId", bookId));
-                    cmd.Parameters.Add(new SqlParameter("@takenDate", DateTime.Now));
-                    cmd.ExecuteNonQuery();
-                }
-                con.Close();
-            }
-
-            //GetAllStudents().Where(s => s.Id == studentId).FirstOrDefault().Book = true;
+            GetStudents().Where(s => s.StudentID == studentId).FirstOrDefault().HasBook = false;
             //Implement Status changes
 
         }
